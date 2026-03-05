@@ -10,10 +10,10 @@ import (
 
 // AuditEvent represents an enterprise log
 type AuditEvent struct {
-	User		string		`json:"user"`
-	Action		string		`json:"action"`
-	Time		time.Time	`json:"timestamp"`
-	Success 	bool		`json:"success"`				
+	User    string    `json:"user"`
+	Action  string    `json:"action"`
+	Time    time.Time `json:"timestamp"`
+	Success bool      `json:"success"`
 }
 
 func accessHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,9 +21,9 @@ func accessHandler(w http.ResponseWriter, r *http.Request) {
 	userRole := r.Header.Get("X-User-Role") // Mocking a header check
 
 	event := AuditEvent{
-		User:		"admin@example.com",
-		Action:		"ACCESS_SENSITIVE_DATA",
-		Time:		time.Now(),
+		User:   "admin@example.com",
+		Action: "ACCESS_SENSITIVE_DATA",
+		Time:   time.Now(),
 	}
 
 	if userRole != "admin" {
@@ -40,8 +40,16 @@ func accessHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Existing route for the audit logic
 	http.HandleFunc("/api/v1/access", accessHandler)
 
+	// Handles the "root" URL (http://localhost/)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Service is Healthy!")
+	})
+
 	fmt.Println("Enterprise Readiness Service starting on :8080...")
+
+	// Starts the server and "blocks" (stays running)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
